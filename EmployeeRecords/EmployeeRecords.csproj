@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Pages\EmployeeReport.cshtml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Pages\EmployeeReport.cshtml" />
+    <Content Remove="wwwroot\js\validation.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Reporting\ORMDataModel.xpo" />
+    <None Remove="Reporting\ORMDataModel.xpo.diagram" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\js\validation.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DevExpress.Reporting.Core" Version="24.1.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.ReportingServices.ReportViewerControl.WebForms" Version="150.1652.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="IMP\" />
+  </ItemGroup>
+
+</Project>

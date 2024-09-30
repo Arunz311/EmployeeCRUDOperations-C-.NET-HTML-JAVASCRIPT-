@@ -1,0 +1,319 @@
+﻿@page
+@model EmployeeRecords.Pages.IndexModel
+@{
+    ViewData["Title"] = "Employee Management";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/styles.css">
+    <script>
+        function confirmDelete(event) {
+            if (!confirm("Are you sure you want to delete this record?")) {
+                event.preventDefault(); // Prevent form from submitting if not confirmed
+            }
+        }
+        function populateFields(employee) {
+            document.getElementById('name').value = employee.name;
+            document.getElementById('designation').value = employee.designation;
+            document.getElementById('doj').value = employee.dateOfJoining;
+            document.getElementById('salary').value = employee.salary;
+            document.getElementById('male').checked = employee.gender === 'Male';
+            document.getElementById('female').checked = employee.gender === 'Female';
+            document.getElementById('state').value = employee.state;
+            document.getElementById('employeeId').value = employee.id; // Set hidden field for update
+        }
+        function newEmployee() {
+            // Clear form fields
+            document.querySelector('input[name="Employee.Id"]').value = "";
+            document.querySelector('form').reset();
+        }
+
+        function editEmployee(id) {
+            document.querySelector('input[name="Employee.Id"]').value = id;
+            document.querySelector('form').submit();
+        }
+    </script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-12">
+                <!-- Employee Form -->
+                <form id="employeeForm" method="post">
+                    <input type="hidden" id="employeeId" name="Employee.Id" value="@Model.Employee?.Id ?? 0" />
+
+                    <div class="form-row mb-3">
+                        <div class="form-group col-md-4">
+                            <label for="name">Name:</label>
+                            <input type="text" id="name" name="Employee.Name" class="form-control form-control-sm"/>
+                            <small id="nameError" class="form-text text-danger"></small>
+
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="designation">Designation:</label>
+                            <input type="text" id="designation" name="Employee.Designation" class="form-control form-control-sm" />
+                            <small id="designationError" class="form-text text-danger"></small>
+
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="doj">Date of Joining:</label>
+                            <input type="date" id="doj" name="Employee.DateOfJoining" class="form-control form-control-sm" />
+                            <small id="dojError" class="form-text text-danger"></small>
+
+                        </div>
+                    </div>
+                    <div class="form-row mb-3">
+                        <div class="form-group col-md-4">
+                            <label for="salary">Salary:</label>
+                            <input type="number" id="salary" name="Employee.Salary" class="form-control form-control-sm" step="0.01" />
+                            <small id="salaryError" class="form-text text-danger"></small>
+
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Gender:</label>
+                            <div class="form-check">
+                                <input type="radio" id="male" name="Employee.Gender" value="Male" class="form-check-input"/>
+                                <label for="male" class="form-check-label">Male</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" id="female" name="Employee.Gender" value="Female" class="form-check-input" />
+                                <label for="female" class="form-check-label">Female</label>
+                                <small id="genderError" class="form-text text-danger"></small>
+
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="state">State:</label>
+                            <select id="state" name="Employee.State" class="form-control form-control-sm"/>
+                                <small id="stateError" class="form-text text-danger"></small>
+
+                                <option value="">Select State</option>
+                                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                            <option value="Telangana">Telangana</option>
+                            <option value="Karnataka">Karnataka</option>
+                            <option value="Tamilnadu">Tamilnadu</option>
+                            <option value="Kerala">Kerala</option>
+
+
+                            </select>
+                            <small id="stateError" class="form-text text-danger"></small>
+
+                        </div>
+                    </div>
+                    <div class="form-row mb-3">
+                        <div class="form-group col-md-12 text-center">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <button type="button" class="btn btn-secondary" onclick="newEmployee()">New Employee</button>
+                            
+                            <button id="sumSalaryButton" type="button"  class="btn btn-primary">Sum of Salary</button>
+                            <p id="validationErrors" class="text-danger"></p>
+                            <script>
+                                function clearError(fieldId, errorId) {
+                                    document.getElementById(fieldId).addEventListener('input', function () {
+                                        document.getElementById(errorId).innerText = ''; // Clear the error message
+                                    });
+                                }
+
+                                document.getElementById('employeeForm').addEventListener('submit', function (event) {
+                                    // Clear previous validation errors
+                                    document.getElementById('validationErrors').innerHTML = '';
+                                    document.getElementById('nameError').innerText = '';
+                                    document.getElementById('designationError').innerText = '';
+                                    document.getElementById('dojError').innerText = '';
+                                    document.getElementById('salaryError').innerText = '';
+                                    document.getElementById('genderError').innerText = '';
+                                    document.getElementById('stateError').innerText = '';
+
+                                    //  field values
+                                    const name = document.getElementById('name').value.trim();
+                                    const designation = document.getElementById('designation').value.trim();
+                                    const doj = document.getElementById('doj').value.trim();
+                                    const salary = document.getElementById('salary').value.trim();
+                                    const gender = document.querySelector('input[name="Employee.Gender"]:checked');
+                                    const state = document.getElementById('state').value.trim();
+
+                                    //  array to collect validation errors
+                                    const errors = [];
+
+                                    // Validate Name
+                                    if (name === '') {
+                                        errors.push('Name is required.');
+                                        document.getElementById('nameError').innerText = 'Name is required.';
+                                    }
+                                    if (designation === '') {
+                                        errors.push('Designation is required.');
+                                        document.getElementById('designationError').innerText = 'Designation is required.';
+                                    }
+                                    if (doj === '') {
+                                        errors.push('Date of Joining is required.');
+                                        document.getElementById('dojError').innerText = 'Date of Joining is required.';
+                                    }
+                                    if (salary === '' || isNaN(salary) || Number(salary) <= 0) {
+                                        errors.push('Salary must be a positive number.');
+                                        document.getElementById('salaryError').innerText = 'Salary is required.';
+                                    }
+                                    if (!gender) {
+                                        errors.push('Gender is required.');
+                                        document.getElementById('genderError').innerText = 'Gender is required.';
+                                    }
+                                    if (state === '') {
+                                        errors.push('State is required.');
+                                        document.getElementById('stateError').innerText = 'State is required.';
+                                    }
+
+                                    // 
+                                    if (errors.length > 0) {
+                                        event.preventDefault(); 
+                                        // document.getElementById('validationErrors').innerHTML = errors.join('<br/>');
+                                    }
+                                });
+                                clearError('name', 'nameError');
+                                clearError('designation', 'designationError');
+                                clearError('doj', 'dojError');
+                                clearError('salary', 'salaryError');
+                                clearError('state', 'stateError');
+
+                                //
+                                document.querySelectorAll('input[name="Employee.Gender"]').forEach(function (element) {
+                                    element.addEventListener('change', function () {
+                                        document.getElementById('genderError').innerText = ''; // Clear gender error on selection
+                                    });
+                                });
+                            </script>
+
+                            <script>
+
+                                document.getElementById('sumSalaryButton').addEventListener('click', function () {
+                                    fetch('/Index?handler=SumSalary', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                                        }
+                                    })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            if (data.error) {
+                                                alert('Error: ' + data.error);
+                                            } else {
+                                                alert('Total Salary: $' + data.totalSalary);
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Error:', error);
+                                            alert('An error occurred while fetching the total salary.');
+                                        });
+                                });
+  
+                            </script>
+                            
+                        </div>
+                    </div>
+                </form>
+                
+                
+                <div class="mt-5">
+                    <h3>Employee List</h3>
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>S.No.</th>
+                                <th>Name</th>
+                                <th>Designation</th>
+                                <th>Date of Joining</th>
+                                <th>Salary</th>
+                                <th>Gender</th>
+                                <th>State</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Employees != null && Model.Employees.Any())
+                            {
+                                int index = 1;
+                                foreach (var employee in Model.Employees)
+                                {
+                                    <tr>
+                                        <td>@index</td>
+                                        <td>
+                            <!-- Clickable employee name -->
+                            <a href="#" onclick="populateFields({
+                                id: @employee.Id,
+                                name: '@employee.Name',
+                                designation: '@employee.Designation',
+                                dateOfJoining: '@employee.DateOfJoining.ToShortDateString()',
+                                salary: '@employee.Salary',
+                                gender: '@employee.Gender',
+                                state: '@employee.State'
+                            })" style="text-decoration: underline; cursor: pointer;">
+                                @employee.Name
+                            </a>
+                        </td>
+                                        <td>@employee.Designation</td>
+                                        <td>@employee.DateOfJoining.ToString("dd/MM/yyyy")</td>
+                                        <td>@employee.Salary.ToString("C")</td>
+                                        <td>@employee.Gender</td>
+                                        <td>@employee.State</td>
+                                        <td>
+                                            <form method="post" asp-page-handler="Delete" onsubmit="confirmDelete(event)">
+                                                <input type="hidden" name="id" value="@employee.Id" />
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    index++;
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    @*<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>*@
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Example event handler for "New Employee" button
+            $('#newEmployeeBtn').on('click', function () {
+                $('form').find('input, select').val(''); // Clear form fields
+            });
+
+            // Example event handler for "Delete Record" button
+            $('#deleteRecordBtn').on('click', function () {
+                // Logic to delete the selected record
+                alert('Delete functionality to be implemented.');
+            });
+
+            // Example event handler for "Sum of Salary" button
+            $('#sumSalaryBtn').on('click', function () {
+                // Logic to calculate the sum of salaries
+                alert('Sum of salary functionality to be implemented.');
+            });
+
+            // Example event handler for "Edit" buttons in DataGrid
+            $('.editBtn').on('click', function () {
+                const id = $(this).data('id');
+                // Logic to populate form with selected employee data
+                alert('Edit functionality to be implemented for ID: ' + id);
+            });
+
+            // Example event handler for "Delete" buttons in DataGrid
+            $('.deleteBtn').on('click', function () {
+                const id = $(this).data('id');
+                // Logic to delete employee record
+                alert('Delete functionality to be implemented for ID: ' + id);
+            });
+        });
+    </script>
+</body>
+</html>

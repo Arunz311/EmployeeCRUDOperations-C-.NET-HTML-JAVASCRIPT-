@@ -1,0 +1,23 @@
+﻿@page
+@model EmployeeRecords.Pages.EmployeeReportModel
+@{
+}
+<h2>Employee Reports</h2>
+
+<form method="post">
+    <label for="reportType">Select Report Type:</label>
+    <select id="reportType" name="reportType">
+        <option value="employeeWise">Employee-Wise</option>
+        <option value="designationWise">Designation-Wise</option>
+        <option value="designationCombination">Combination of Designations</option>
+        <option value="designationHierarchy">Designation Hierarchy</option>
+    </select>
+    <br /><br />
+
+    <button type="submit">Generate Report</button>
+</form>
+<div>
+    <rsweb:ReportViewer ID="ReportViewer1" runat="server" Height="400px" Width="600px">
+    </rsweb:ReportViewer>
+</div>
+

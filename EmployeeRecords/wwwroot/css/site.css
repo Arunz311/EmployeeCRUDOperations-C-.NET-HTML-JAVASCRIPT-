@@ -1,0 +1,34 @@
+/* styles.css */
+.form-inline .form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+    .form-inline .form-group label {
+        width: 150px; /* Adjust as needed */
+    }
+
+.form-control-sm {
+    width: 150px; /* Adjust width for smaller input fields */
+}
+
+.ml-2 {
+    margin-left: 0.5rem; /* Space between label and input */
+}
+
+.ml-3 {
+    margin-left: 1rem; /* Space between form groups */
+}
+
+.form-check-inline {
+    margin-right: 0.5rem; /* Space between radio buttons */
+}
+
+.container {
+    margin-top: 50px; /* Space from the top of the page */
+}
+
+.row {
+    justify-content: center; /* Centering the form horizontally */
+}
